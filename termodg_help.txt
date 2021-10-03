@@ -1,0 +1,244 @@
+C:\Users\zharo\termodj>python -m venv termovenv
+
+termovenv\Scripts\activate
+
+pip install django
+python -m django --version
+
+
+locallibrary/         # Папка сайта                 -  ЭТО ИЗ ПРИМЕРА
+    manage.py         # Скрипт для управления проектов (создан manage.py)   -  ЭТО ИЗ ПРИМЕРА
+    locallibrary/     # Папка сайта/проекта (создана manage.py)    -  ЭТО ИЗ ПРИМЕРА
+    catalog/          # Папка приложения (также создана manage.py) 		-  ЭТО ИЗ ПРИМЕРА
+
+(termovenv) C:\Users\zharo\termodj>mkdir django_termosite
+
+(termovenv) C:\Users\zharo\termodj>cd django_termosite
+
+(termovenv) C:\Users\zharo\termodj\django_termosite>django-admin startproject termosite
+
+(termovenv) C:\Users\zharo\termodj\django_termosite>cd termosite
+
+python3 manage.py runserver
+
+http://127.0.0.1:8000/
+
+settings.py содержит в себе все настройки проекта. Здесь мы регистрируем приложения, задаём размещение статичных файлов, 
+настройки базы данных и так далее.  
+urls.py задаёт ассоциации url адресов с представлениями. Несмотря на то, что этот файл может содержать все настройки url, 
+обычно его делят на части, по одной на приложение, как будет показано далее.
+wsgi.py используется для налаживания связи между вашим Django приложением и веб-сервером. Вы можете воспринимать его, 
+как утилиту.
+Скрипт manage.py используется для создания приложений, работы с базами данных и для запуска отладочного сервера. 
+
+Выполнив предыдущие шаги, запустите следующую команду для создания приложения termoapp, который будет размещён внутри папки 
+termosite 
+(команду необходимо выполнять из папки, в которой находится manage.py):
+
+(termovenv) C:\Users\zharo\termodj\django_termosite\termosite>python3 manage.py startapp termoapp
+
+Эта команда создаст новую папку и наполнит её файлами различных частей приложения (выделенные полужирным ниже). 
+Большинство файлов названы, исходя из их назначения (например контроллеры(views) должны находится во views.py, 
+модели в models.py, тесты в tests.py, настройки административной части в admin.py, регистрация приложения в apps.py) и уже 
+содержат некоторый шаблонный код для работы с вышеназванными объектами.
+
+Папка migrations используется, чтобы хранить"миграции" — файлы, которые позволяют вам автоматически обновлять базу данных 
+по мере изменения моделей. 
+__init__.py — пустой файл для того, чтобы Django и Python распознавали папку как Python модуль 
+и позволяет нам использовать его объекты внутри других частей проекта.
+
+После создания приложения, нам нужно зарегистрировать его в проекте, 
+чтобы различные утилиты затрагивали его своим действием (например при добавлении моделей в базу данных). 
+Приложения регистрируются добавлением их названий в список INSTALLED_APPS в настройках проекта(который, 
+как мы помним, называется settings.py). 
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'termoapp',                             -  ЭТО ВЕРНО!!!!
+    ]
+	
+'termoapp.apps.CatalogConfig'     - вариант   -  НЕ ВЕРНО
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'termoapp.apps.TermoappConfig',        -  ЭТО ВЕРНО!!!!
+    ]
+
+
+Файл settings.py так же применяется и для некоторых других настроек, но на данном шаге имеет смысл поменять разве что 
+TIME_ZONE — это значение должно быть представлено строкой, указанной в списке часовых поясов tz (колонка TZ в таблице, 
+в строке временной зоны, которая вам нужна). Измените TIME_ZONE
+TIME_ZONE = 'Europe/Moscow'
+
+SECRET_KEY. Это секретный ключ, который используется Django для поддержки безопасности сайта. 
+Если вы раскроете этот ключ в процессе разработки кому-либо, то необходимо будет его сменить 
+(возможно считать его с какого-либо файла на сервере или переменной окружения) когда будете размещать проект на сервер. 
+DEBUG. Включает подробные сообщения об ошибках, вместо стандартных HTTP статусов ответов. 
+Должно быть изменено на False на сервере, так как эта информация очень много расскажет взломщикам. 
+
+Подключение URL-адреса
+При создании сайта, был создан файл сопоставления URL (urls.py) в корне проекта.
+
+Добавьте строчки, приведённые ниже в низ файла urls.py , чтобы добавить новый элемент в список urlpatterns. 
+Этот элемент содержит url() который направляет запросы с URL catalog/ к модулю  catalog.urls 
+(файл с относительным путём /catalog/urls.py).
+
+# Используйте include() чтобы добавлять URL из каталога приложения
+from django.urls import include
+from django.urls import path
+urlpatterns += [
+     path('termoapp/', include('termoapp.urls')),
+]
+
+Теперь давайте перенаправим корневой URL нашего сайта (например 127.0.0.1:8000) на URL 127.0.0.1:8000/catalog/;
+это единственное приложение, которое мы собираемся использовать, поэтому это вполне разумно. 
+Чтобы это использовать, нам понадобится специальная функция (RedirectView), которая принимает первым параметром 
+новый относительный URL на который следует перенаправлять (/catalog/) когда указанный в функции url() адрес 
+ соотносится с адресом запроса (корневой URL, в данном случае).
+ 
+ # Добавьте URL соотношения, чтобы перенаправить запросы с корневого URL, на URL приложения
+from django.views.generic import RedirectView
+urlpatterns += [
+    path('', RedirectView.as_view(url='/termoapp/', permanent=True)),
+]
+
+Django не размещает статические файлы(CSS, JavaScript, и изображения) по умолчанию, 
+но это было бы крайне полезно на этапе разработки нашего сайта. В самом конце нашего URL соотносителя, 
+можно включить размещение статических файлов. 
+
+Добавьте последнюю часть в конец файла:
+# Используйте static() чтобы добавить соотношения для статических файлов
+# Только на период разработки
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+
+Примечание: Существуют различные способы дополнения списка urlpatterns (в примере мы просто добавляли объект, 
+используя оператор += чтобы чётко разделить изначальный и дописанный код). Вместо этого, мы могли бы добавить соотношения внутрь определения переменной:
+
+urlpatterns = [   path('admin/', admin.site.urls),
+path('catalog/', include('catalog.urls')),path('',
+RedirectView.as_view(url='/catalog/', permanent=True)), ] +
+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+Кроме того, мы добавили import вниз файла (from django.urls import include) ,чтобы видеть, что мы добавили, 
+но обычно все инструкции import добавляются в верхнюю часть файла
+
+Напоследок, создайте файл urls.py внутри папки catalog, и добавьте следующий код, чтобы определить (пустой) urlpatterns. 
+Сюда мы будем добавлять наши URL соотношения, по мере разработки сайта. 
+
+python3 manage.py makemigrations
+python3 manage.py migrate
+
+							КРАТКО  -  РАБОТАЕТ  -  
+
+1) представление (view). Откройте файл termoapp/views.py и вставьте в него следующий код Python:
+
+termoapp/views.py
+from django.http import HttpResponse
+
+
+def index(request):
+    return HttpResponse("Hello, world. You're at the polls index.")
+	
+2) Чтобы вызвать представление, нам нужно сопоставить его с URL - и для этого нам нужен URLconf.
+
+Чтобы создать URLconf в каталоге приложения    termoapp, создайте файл с именем urls.py	
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.index, name='index'),
+]
+
+# Здесь index это имя функции из views
+
+3) Следующим шагом является указание корневого URLconf на модуль termoapp.urls
+В файле urls.py    самого проекта - termosite
+
+from django.contrib import admin
+from django.urls import path
+from django.urls import include
+from termoapp import views
+#from . import views
+
+urlpatterns = [
+    path('termoapp/', include('termoapp.urls')),
+    
+    path('admin/', admin.site.urls),
+    
+    
+]
+
+4) python3 manage.py runserver         -   запускать в папке, где есть manage.py
+
+
+		МОДЕЛЬ ПЕРВАЯ ТЕСТОВАЯ
+class Bb(models.Model):
+    #rubric = models.ForeignKey(SubRubric, on_delete=models.PROTECT,
+    #                                      verbose_name='Рубрика')
+    title = models.CharField(max_length=50, verbose_name='Товар')
+    content = models.TextField(null=True, blank=True)
+    price = models.FloatField(null=True, blank=True, verbose_name='Цена')
+    #contacts = models.TextField(verbose_name='Контакты')
+    #image = models.ImageField(blank=True, upload_to=get_timestamp_path,
+    #                          verbose_name='Изображение')
+    #author = models.ForeignKey(AdvUser, on_delete=models.CASCADE,
+    #                           verbose_name='Автор объявления')
+    published = models.DateTimeField(auto_now_add=True, db_index=True)
+
+
+
+python3 manage.py makemigrations termoapp
+
+C:\Users\zharo\termodj\django_termosite\termosite>python3 manage.py sqlmigrate termoapp 0001
+BEGIN;
+--
+-- Create model Bb
+--
+CREATE TABLE "termoapp_bb" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "title" varchar(50) NOT NULL, "content" text NULL, "price" real NULL, "published" datetime NOT NULL);
+CREATE INDEX "termoapp_bb_published_1b007859" ON "termoapp_bb" ("published");
+COMMIT;
+
+C:\Users\zharo\termodj\django_termosite\termosite>python3 manage.py migrate
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, sessions, termoapp
+Running migrations:
+  Applying termoapp.0001_initial... OK
+  
+
+
+>>> from termoapp.models import Bb
+>>> b1 = Bb(title='Дача', content='Общество "Двухэтажники". ' , price = 500000)
+>>> b1.save()
+>>> b1.pk
+
+
+
+В ИТОГЕ - СОЗДАЛИ МОДЕЛЬ - ОПИСАНИЕ ТАБЛИЦЫ БД, ЗАТЕМ СЗЕМУ SQL КОДА, СДЕЛАЛИ МИГРАЦИЮ, ТЕМ САМЫМ СОЗДАЛИ ТАБЛИЦУ В бд, 
+И ИЗ SHELL В DJANGO СОЗДАЛИ ЗАПИСЬ В ТАБЛИЦЕ, ТО ЕСТЬ B1 - ЭТО ЭКЗЕМПЛЯР КЛАССА Bb
+
+ДОБАВЛЕНИЕ ВТОРОЙ ЗАПИСИ
+>>> from termoapp.models import Bb
+>>> b2 = Bb()
+>>> b2.title = 'Автомобиль'
+>>> b2.content = '"Жигули"'
+>>> b2.save()
+>>> b2.title
+'Автомобиль'
+
+Bb.objects.create(title='Дом', content='Трехэтажный кирпичный ' , price = 5000000)
+
+
+
