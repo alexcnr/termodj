@@ -240,5 +240,10 @@ Running migrations:
 
 Bb.objects.create(title='Дом', content='Трехэтажный кирпичный ' , price = 5000000)
 
+T_SBP_DBP_S_BR.objects.create(title='Иванов И.И.', sex='Мужской' , temperature = 37.5 , sbp = 127 , dbp = 74 , saturation = 97, breath_rate = 24)
+
+from termoapp.models import T_SBP_DBP_S_BR
+
+T_SBP_DBP_S_BR.objects.create(title='Кравченко З.В.', sex='Женский' , temperature = 37.9 , sbp = 158 , dbp = 94 , saturation = 94, breath_rate = 24)
 
 

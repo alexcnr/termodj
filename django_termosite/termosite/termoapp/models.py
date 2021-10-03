@@ -27,7 +27,8 @@ class T_SBP_DBP_S_BR(models.Model):
     #rubric = models.ForeignKey(SubRubric, on_delete=models.PROTECT,
     #                                      verbose_name='Рубрика')
     title = models.CharField(max_length=50, verbose_name='ФИО')
-    temperature = models.IntegerField(null=True, blank=True, verbose_name='Температура')
+    sex = models.TextField(max_length=10, blank=True, verbose_name='Пол')
+    temperature = models.FloatField(null=True, blank=True, verbose_name='Температура')
     sbp = models.IntegerField(null=True, blank=True, verbose_name='САД')
     dbp = models.IntegerField(null=True, blank=True, verbose_name='ДАД')
     saturation = models.IntegerField(null=True, blank=True, verbose_name='Сатурация')
