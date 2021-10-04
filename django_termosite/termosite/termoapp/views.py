@@ -7,6 +7,8 @@ from django.http import HttpResponse
 from django.template import loader
 
 from .models import Bb, T_SBP_DBP_S_BR
+
+from django.shortcuts import render
  
 def index(request):
     """КОНТРОЛЛЕР ФУНКЦИЯ index
@@ -29,28 +31,35 @@ def index(request):
             
     #return HttpResponse("Здесь будет список параметров датчика")
 
-    template = loader.get_template('termoapp/index.html')
-    bbs = Bb.objects.order_by('-published')
-    pps = T_SBP_DBP_S_BR.objects.order_by('-published')
+
+
+    #template = loader.get_template('termoapp/index.html')   ЭТО БОЛЕЕ ПОНЯТНЫЙ ВАРИАНТ
+    
+    
+    
+    #bbs = Bb.objects.order_by('-published')  #  это В 1 ВАРИАНТЕ
+    #pps = T_SBP_DBP_S_BR.objects.order_by('-published')  #  это В 1 ВАРИАНТЕ
+
+    bbs = Bb.objects.all()  #  это В 2 ВАРИАНТЕ, когда мы уже отсортировали в модели в классе Мета
+    pps = T_SBP_DBP_S_BR.objects.all()  #  это В 2 ВАРИАНТЕ  когда мы уже отсортировали в модели в классе Мета
+
 
 
 
         ## передаем словарь переменных для рендеринга, в книге пока этого не было  ###
-    context = {'bbs': bbs, 
+         # ЭТО БОЛЕЕ ПОНЯТНЫЙ ВАРИАНТ
+    #context = {'bbs': bbs, 
+    #           'pps': pps
+    #}
+    #return HttpResponse(template.render(context, request))        #БОЛЕЕ ПОНЯТНЫЙ ВАРИАНТ
+
+    return render(request, 'termoapp/index.html', {'bbs': bbs, 
                'pps': pps
     }
-    #context_patients = {'pps': pps}
-
-    #return HttpResponse(s, content_type="text/plain; charset=utf-8")
-    return HttpResponse(template.render(context, request))
+    )
 
 
-    #latest_question_list = Question.objects.order_by('-pub_date')[:5]
-    #template = loader.get_template('polls/index.html')
-    #context = {
-    #    'latest_question_list': latest_question_list,
-    #}
-    #return HttpResponse(template.render(context, request))
+
 
 
 

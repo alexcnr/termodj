@@ -13,14 +13,39 @@ class Bb(models.Model):
     #rubric = models.ForeignKey(SubRubric, on_delete=models.PROTECT,
     #                                      verbose_name='Рубрика')
     title = models.CharField(max_length=50, verbose_name='Товар')
-    content = models.TextField(null=True, blank=True)
+    content = models.TextField(null=True, blank=True, verbose_name='Описание')
     price = models.FloatField(null=True, blank=True, verbose_name='Цена')
     #contacts = models.TextField(verbose_name='Контакты')
     #image = models.ImageField(blank=True, upload_to=get_timestamp_path,
     #                          verbose_name='Изображение')
     #author = models.ForeignKey(AdvUser, on_delete=models.CASCADE,
     #                           verbose_name='Автор объявления')
-    published = models.DateTimeField(auto_now_add=True, db_index=True)
+    published = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Опубликовано')
+
+    rubric = models.ForeignKey('Rubric', null=True, on_delete=models.PROTECT, verbose_name='Название рубрики')
+    # первым параметром передаем строку с именем класса первичной модели, т.к.
+    #вторичная модель(Bb) у нас обхявлена раньше первичной (Rubric)
+    #null=True  - помечаем поле как необязательное
+
+    class Meta:
+        ##ДЛЯ АДМИНКИ##
+        verbose_name_plural = 'Объявления'
+        verbose_name = 'Объявление'
+        ordering = ['-published']
+
+class Rubric(models.Model):
+    name = models.CharField(max_length=20, db_index=True, verbose_name='Название рубрики')
+
+    def __str__(self) -> str:
+        return self.name
+
+
+    class Meta:
+        ##ДЛЯ АДМИНКИ##
+        verbose_name_plural = 'Названия рубрик'
+        verbose_name = 'Название рубрики'
+        ordering = ['name']
+
 
 
 class T_SBP_DBP_S_BR(models.Model):
@@ -38,4 +63,9 @@ class T_SBP_DBP_S_BR(models.Model):
     #                          verbose_name='Изображение')
     #author = models.ForeignKey(AdvUser, on_delete=models.CASCADE,
     #                           verbose_name='Автор объявления')
-    published = models.DateTimeField(auto_now_add=True, db_index=True)
+    published = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Опубликовано')
+        
+    class Meta:
+        verbose_name_plural = 'Пациенты'
+        verbose_name = 'Пациент'
+        ordering = ['-published']
