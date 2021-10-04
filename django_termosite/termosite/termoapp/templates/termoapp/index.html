@@ -24,7 +24,19 @@
         </div>
         {% endfor %}
 
+        <h1> Пациенты </h1>
 
+        {% for pp in pps %}
+
+        <div>
+            <h2> {{ pp.title }} </h2>
+            <p> {{ pp.sex }} </p>
+            <p> Сатурация -  {{ pp.saturation }} Температура -  {{ pp.temperature }}</p>
+            <p> {{ pp.published|date:"d.m.Y H:i:s" }} </p>
+
+
+        </div>
+        {% endfor %}
 
         
     </body>

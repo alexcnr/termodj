@@ -31,10 +31,26 @@ def index(request):
 
     template = loader.get_template('termoapp/index.html')
     bbs = Bb.objects.order_by('-published')
-    context = {'bbs': bbs}
+    pps = T_SBP_DBP_S_BR.objects.order_by('-published')
+
+
+
+        ## передаем словарь переменных для рендеринга, в книге пока этого не было  ###
+    context = {'bbs': bbs, 
+               'pps': pps
+    }
+    #context_patients = {'pps': pps}
 
     #return HttpResponse(s, content_type="text/plain; charset=utf-8")
     return HttpResponse(template.render(context, request))
+
+
+    #latest_question_list = Question.objects.order_by('-pub_date')[:5]
+    #template = loader.get_template('polls/index.html')
+    #context = {
+    #    'latest_question_list': latest_question_list,
+    #}
+    #return HttpResponse(template.render(context, request))
 
 
 
