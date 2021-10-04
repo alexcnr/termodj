@@ -33,6 +33,7 @@ class Bb(models.Model):
         verbose_name = 'Объявление'
         ordering = ['-published']
 
+# модель для доски объявлений
 class Rubric(models.Model):
     name = models.CharField(max_length=20, db_index=True, verbose_name='Название рубрики')
 

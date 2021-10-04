@@ -23,8 +23,8 @@ from termoapp import views
 #from . import views
 
 urlpatterns = [
-    #path('termoapp/', include('termoapp.urls')),
-    path('termoapp/', views.index),
+    path('termoapp/', include('termoapp.urls')),
+    #path('termoapp/', views.index),
     
     path('admin/', admin.site.urls),
     

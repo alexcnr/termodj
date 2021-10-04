@@ -9,6 +9,21 @@ from django.template import loader
 from .models import Bb, T_SBP_DBP_S_BR
 
 from django.shortcuts import render
+
+from .models import Rubric
+
+
+#контроллер функция 
+#параметру rubric_id будет передано значение параметра, выбранное из инетернет адреса
+def by_rubric(request, rubric_id):
+    bbs = Bb.objects.filter(rubric=rubric_id)
+    rubrics = Rubric.objects.all()
+    current_rubric = Rubric.objects.get(pk=rubric_id)
+    context = {'bbs': bbs,
+                'rubrics' : rubrics,
+                'current_rubric' : current_rubric}
+
+    return render(request, 'termoapp/by_rubric.html', context)
  
 def index(request):
     """КОНТРОЛЛЕР ФУНКЦИЯ index
@@ -42,8 +57,13 @@ def index(request):
 
     bbs = Bb.objects.all()  #  это В 2 ВАРИАНТЕ, когда мы уже отсортировали в модели в классе Мета
     pps = T_SBP_DBP_S_BR.objects.all()  #  это В 2 ВАРИАНТЕ  когда мы уже отсортировали в модели в классе Мета
+    rubrics = Rubric.objects.all()
+    context = {'bbs': bbs, 
+               'pps': pps,
+               'rubrics' : rubrics
+    }
 
-
+    return render(request, 'termoapp/index.html', context)
 
 
         ## передаем словарь переменных для рендеринга, в книге пока этого не было  ###
@@ -53,12 +73,10 @@ def index(request):
     #}
     #return HttpResponse(template.render(context, request))        #БОЛЕЕ ПОНЯТНЫЙ ВАРИАНТ
 
-    return render(request, 'termoapp/index.html', {'bbs': bbs, 
-               'pps': pps
-    }
-    )
-
-
+    #return render(request, 'termoapp/index.html', {'bbs': bbs, 
+    #           'pps': pps
+    #}
+    #)
 
 
 
